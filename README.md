@@ -1,0 +1,2 @@
+# malody_beatmap_speed_changer
+Malody减速或加速的谱面生成器。
