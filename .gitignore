@@ -1,6 +1,11 @@
 .DS_Store
+main.spec
+test.py
 node_modules
 test/
+env
+build
+__pycache__/
 # local env files
 .env.local
 .env.*.local

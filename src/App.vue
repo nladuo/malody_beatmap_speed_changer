@@ -38,9 +38,6 @@
 
       </div>
 
-
-
-
     </center>
 
   </div>
@@ -53,32 +50,28 @@ export default {
   data() {
     return{
       beatmaps:[],
-      speeds: [
-              "0.7",
-              "0.75",
-              "0.8",
-              "0.85",
-              "0.9",
-              "0.95",
-              "1.05",
-              "1.1",
-              "1.15",
-              "1.2",
-              "1.25",
-              "1.3",
-              "1.35",
-              "1.4",
-              "1.5",
-              "1.6",
-              "1.7",
-              "1.8",
-              "2.0",
-      ],
+      speeds: [],
       checkedSpeeds: [],
       index: 0,
       show_result: false,
       result_file: ""
     }
+  },
+  mounted() {
+    const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+
+      Api.get("/get_speeds", {
+        speeds: JSON.stringify(this.checkedSpeeds),
+        index: this.index
+      }, (res)=> {
+        loading.close();
+        this.speeds = res.speeds;
+      })
   },
   methods: {
     handleUploadSuccess(res) {
@@ -97,8 +90,8 @@ export default {
     },
 
     getBeatMaps() {
-      console.log(this.index)
-      console.log(this.checkedSpeeds)
+      console.log(this.index);
+      console.log(this.checkedSpeeds);
 
 
       const loading = this.$loading({

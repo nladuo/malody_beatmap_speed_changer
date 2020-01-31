@@ -3,6 +3,7 @@ import json
 import os
 from backend.beatmap_helper import *
 from backend.utils import *
+import traceback
 
 
 app = Flask(__name__, static_folder='dist')
@@ -21,6 +22,30 @@ def serve_static(path):
 @app.route('/api/get_file/<path:path>')
 def serve_get_file(path):
     return send_from_directory('./upload_dir', path)
+
+
+@app.route('/api/get_speeds')
+def api_get_speeds():
+    speeds = []
+    try:
+        with open("speeds.txt", "r") as f:
+            for line in f.readlines():
+                try:
+                    speed = int(1000 * float(line)) / 1000
+                    if (speed > 0.49999) and (speed < 2.00001):
+                        speeds.append(speed)
+                except:
+                    pass
+    except:
+        pass
+
+    if len(speeds) == 0:
+        speeds = [0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.4, 1.5, 1.6, 1.7, 2.0]
+
+    return json.dumps({
+        "success": True,
+        "speeds": speeds
+    })
 
 @app.route('/api/upload_file', methods=["POST"])
 def api_upload_file():
@@ -67,6 +92,7 @@ def api_generate_beatmaps():
             "file": tmp_file
         })
     except:
+        traceback.print_exc()
         return json.dumps({
             "success": False
         })

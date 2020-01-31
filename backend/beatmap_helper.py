@@ -95,7 +95,7 @@ def generate_beatmap(json_data, x, sr, speed, outdir):
 
 def generate_beatmaps(outdir, json_data, speeds):
     sond_file = json_data["note"][-1]["sound"]
-    x, sr = librosa.load(os.path.join(outdir, sond_file), sr=12000)
+    x, sr = librosa.load(os.path.join(outdir, sond_file), sr=16000)
 
     for speed in speeds:
         speed = float(speed)
