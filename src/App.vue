@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <center>
-      <h1>Malody谱面速度修改器</h1>
+      <h1>Malody/Osu谱面速度修改器</h1>
       <el-upload
               class="upload-demo"
               drag
@@ -10,7 +10,7 @@
               action="/api/upload_file">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传malody格式的谱面（不支持osu格式）</div>
+        <div class="el-upload__tip" slot="tip">只能支持mcz或者osz格式的文件</div>
       </el-upload>
 
       <div v-if="beatmaps.length !== 0">
@@ -20,7 +20,7 @@
           <el-option
                   v-for="item in beatmaps"
                   :key="item.id"
-                  :label="item.version +'-' + item.bpm"
+                  :label="item.version"
                   :value="item.id">
           </el-option>
         </el-select>
@@ -65,10 +65,7 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       });
 
-      Api.get("/get_speeds", {
-        speeds: JSON.stringify(this.checkedSpeeds),
-        index: this.index
-      }, (res)=> {
+      Api.get("/get_speeds", {}, (res)=> {
         loading.close();
         this.speeds = res.speeds;
       })

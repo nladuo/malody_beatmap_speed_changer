@@ -12,5 +12,6 @@ def get_file_extension(filename):
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = [
         "mcz",
+        "osz",
     ]
     return get_file_extension(filename) in ALLOWED_EXTENSIONS

@@ -84,9 +84,10 @@ def api_generate_beatmaps():
 
         beatmaps = get_beatmaps(create=False)
         beatmap = beatmaps[index]
+        _type = beatmap["type"]
         outdir = beatmap["out_dir"]
         json_data = beatmap["json_data"]
-        tmp_file = generate_beatmaps(outdir, json_data, speeds)
+        tmp_file = generate_beatmaps(_type, outdir, json_data, speeds)
         return json.dumps({
             "success": True,
             "file": tmp_file
