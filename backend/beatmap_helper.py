@@ -5,6 +5,8 @@ import librosa
 import time
 import uuid
 from .osu_parser import OsuFileParser
+from .config import NEED_COMPRESSED
+from .music_helper import compress_music
 
 
 def get_tmp_dir():
@@ -100,6 +102,9 @@ def generate_beatmap_malody(json_data, x, sr, speed, outdir):
     tmp_data["note"][-1]["offset"] = int(tmp_data["note"][-1]["offset"] / speed)  # 修改偏移
 
     song_file = generate_song(speed, x, sr, outdir)
+    if NEED_COMPRESSED:
+        filepath = os.path.join(outdir, song_file)
+        compress_music(filepath)
 
     tmp_data["note"][-1]["sound"] = song_file  # 设置歌曲文件
 
@@ -152,7 +157,7 @@ def generate_beatmap_osu(json_data, x, sr, speed, outdir):
         elif splits[0] == "2":
             splits[1] = str(int(int(splits[1]) / speed))
             splits[2] = str(int(int(splits[2]) / speed))
-        print(splits)
+        # print(splits)
 
         tmp_data["Events"][i] = ",".join(splits)
 
@@ -176,6 +181,9 @@ def generate_beatmap_osu(json_data, x, sr, speed, outdir):
         tmp_data["HitObjects"][i] = ",".join(splits)
 
     song_file = generate_song(speed, x, sr, outdir)
+    if NEED_COMPRESSED:
+        filepath = os.path.join(outdir, song_file)
+        compress_music(filepath)
 
     tmp_data["General"]["AudioFilename"] = song_file  # 设置歌曲文件
 
