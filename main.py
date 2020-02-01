@@ -1,6 +1,4 @@
 from flask import Flask, send_from_directory, request
-import json
-import os
 from backend.beatmap_helper import *
 from backend.utils import *
 import traceback
@@ -51,10 +49,10 @@ def api_get_speeds():
 def api_upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
-            return json.dumps({'success': False, 'msg': '请求参数错误'})
+            return json.dumps({'success': False, 'msg': 'error parameters'})
         file = request.files['file']
         if file.filename == '':
-            return json.dumps({'success': False, 'msg': '没选择文件'})
+            return json.dumps({'success': False, 'msg': 'no file selected'})
         else:
             if file and allowed_file(file.filename):
                 origin_file_name = file.filename
@@ -66,12 +64,12 @@ def api_upload_file():
                 beatmaps = get_beatmaps(create=True)
 
                 if len(beatmaps) != 0:
-                    return json.dumps({'success': True, 'beatmaps': beatmaps, 'msg': '成功'})
+                    return json.dumps({'success': True, 'beatmaps': beatmaps, 'msg': 'success'})
                 else:
-                    return json.dumps({'success': False, 'msg': '未找到谱面'})
+                    return json.dumps({'success': False, 'msg': 'cannot find beatmap'})
 
             else:
-                return json.dumps({'success': False, 'msg': '文件类型错误，请上传mcz格式'})
+                return json.dumps({'success': False, 'msg': 'error file type'})
 
 
 @app.route('/api/generate_beatmaps')

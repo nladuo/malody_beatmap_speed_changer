@@ -1,6 +1,4 @@
 
-UPLOAD_DIR = ""
-
 
 def get_file_extension(filename):
     if "." not in filename:

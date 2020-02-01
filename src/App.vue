@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <center>
-      <h1>Malody/Osu谱面速度修改器</h1>
+      <h1>Malody/Osu BeatMap Speed Changer</h1>
       <el-upload
               class="upload-demo"
               drag
@@ -9,14 +9,14 @@
               :on-success="handleUploadSuccess"
               action="/api/upload_file">
         <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能支持mcz或者osz格式的文件</div>
+        <div class="el-upload__text">Drag file to hear，Or <em>Click to Upload</em></div>
+        <div class="el-upload__tip" slot="tip">only support file ended with .mcz and .osz</div>
       </el-upload>
 
       <div v-if="beatmaps.length !== 0">
         <br><br>
-        <label>选择谱面：</label>
-        <el-select v-model="index" placeholder="请选择" style="width: 350px">
+        <label>Select BeatMap：</label>
+        <el-select v-model="index" placeholder="Please Select" style="width: 350px">
           <el-option
                   v-for="item in beatmaps"
                   :key="item.id"
@@ -26,15 +26,15 @@
         </el-select>
 
         <br><br>
-        <label>选择速度：</label>
+        <label>Select Speed：</label>
         <el-checkbox-group v-model="checkedSpeeds" style="max-width: 800px">
           <el-checkbox v-for="speed in speeds" :label="speed" :key="speed">{{speed}}</el-checkbox>
         </el-checkbox-group>
 
         <br><br>
-        <el-button type="primary" style="width: 350px" @click="getBeatMaps">生成谱面</el-button>
-
-        <a v-if="show_result" :href="'/api/get_file/' + result_file">下载谱面</a>
+        <el-button type="primary" style="width: 350px" @click="getBeatMaps">Generate BeatMap</el-button>
+        <br><br>
+        <a v-if="show_result" :href="'/api/get_file/' + result_file">Download BeatMap</a>
 
       </div>
 
@@ -75,7 +75,7 @@ export default {
 
       if (res.success) {
         this.$message({
-          message: '上传成功',
+          message: 'Upload Success',
           type: 'success'
         });
         this.show_result = false;
@@ -108,7 +108,7 @@ export default {
           this.result_file = res.file;
         }else {
           this.show_result = false;
-          this.$message.error("发生错误，生成谱面失败");
+          this.$message.error("Error occurred，generation for beatmap failed");
         }
       })
     }

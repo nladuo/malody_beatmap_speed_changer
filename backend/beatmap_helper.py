@@ -11,6 +11,7 @@ def get_tmp_dir():
     with open(os.path.join("upload_dir", "now_dir.txt"), "r") as f:
         return f.read()
 
+
 def create_tmp_dir():
     _dir = str(uuid.uuid4())
     os.mkdir(os.path.join("upload_dir", "tmp", _dir))
