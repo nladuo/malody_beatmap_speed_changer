@@ -23,7 +23,7 @@ With this software, you can change beatmap speeds as follow.
 
 ## Installation And Setup
 ### Install Python3
-download python installer from [Python Website](https://www.python.org/downloads/), and add Python executable files to your `Path`.
+Download python installer from [Python Website](https://www.python.org/downloads/), and add Python executable files to your `Path`.
 
 ### Install Dependencies
 ```
@@ -41,3 +41,7 @@ Run main.py, and open [http://localhost:4776](http://localhost:4776) with your w
 
 ## Other Speeds
 If the speeds which have been listed cannot satisfy your requirements. You can modify `speed.txt`.
+
+
+## LICENSE
+MIT
