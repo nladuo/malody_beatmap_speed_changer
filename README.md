@@ -5,13 +5,13 @@ Malody Beatmap Speed Changer, also support .osu files.
 
 ## Windows Download
 ### 百度云
-链接：https://pan.baidu.com/s/1OiAhw0WEm3F8appouSkxgw 
-提取码：2bbs
+链接：https://pan.baidu.com/s/14vpD85N6q43E3QH63FtbuA 
+提取码：xtsr
 
 操作视频：[https://www.bilibili.com/video/av86027458](https://www.bilibili.com/video/av86027458)
 
 ### Google Drive
-To Upload.....
+Link: https://drive.google.com/file/d/1R2zkJHGL1pTkU9vXQYpJTIL-r9M7zpUc/view?usp=sharing
 
 ## Screenshot
 With this software, you can change beatmap speeds as follow.

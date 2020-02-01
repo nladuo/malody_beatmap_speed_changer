@@ -9,7 +9,7 @@
               :on-success="handleUploadSuccess"
               action="/api/upload_file">
         <i class="el-icon-upload"></i>
-        <div class="el-upload__text">Drag file to hear，Or <em>Click to Upload</em></div>
+        <div class="el-upload__text">Drag file to here，Or <em>Click to Upload</em></div>
         <div class="el-upload__tip" slot="tip">only support file ended with .mcz and .osz</div>
       </el-upload>
 
