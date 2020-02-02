@@ -1,6 +1,7 @@
-import librosa
+import os
 
 
-def compress_music(filepath):
-    x, sr = librosa.load(filepath, sr=8400)
-    librosa.output.write_wav(filepath, x, sr)
+def change_music_speed_with_ffmpeg(src, speed, dest):
+    cmd = f'ffmpeg -n -i {src} -filter:a "atempo={speed}" {dest}'
+    print(cmd)
+    os.system(cmd)

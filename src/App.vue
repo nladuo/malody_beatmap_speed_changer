@@ -2,6 +2,10 @@
   <div id="app">
     <center>
       <h1>Malody/Osu BeatMap Speed Changer</h1>
+      <h2>&nbsp;&nbsp; by <a>nladuo</a></h2>
+      B站操作视频链接：<a href="https://www.bilibili.com/video/av86027458/" target="_blank">https://www.bilibili.com/video/av86027458/</a><br>
+      PS: 如果你觉得这个软件对你有帮助，可以给这个视频<b>点赞</b>，<b style="color: red">有关软件的更新都会放在视频的评论区</b>，顺道<b>求关注</b>。<br>
+      <br><br>
       <el-upload
               class="upload-demo"
               drag

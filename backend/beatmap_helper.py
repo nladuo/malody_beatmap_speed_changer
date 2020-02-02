@@ -1,12 +1,10 @@
 import zipfile
 import os
 import json
-import librosa
 import time
 import uuid
 from .osu_parser import OsuFileParser
-from .config import NEED_COMPRESSED
-from .music_helper import compress_music
+from .music_helper import change_music_speed_with_ffmpeg
 
 
 def get_tmp_dir():
@@ -47,13 +45,13 @@ def get_beatmaps(create=False):
             splits = fileM.split("/")
             if len(splits) != 2:
                 raise Exception("error format")
-
-            data = zFile.read(fileM).decode("utf-8")
+            filepath = os.path.join(base_dir, fileM)
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = f.read()
             json_data = json.loads(data)
 
             out_dir = os.path.join(base_dir, splits[0])
             version = json_data["meta"]["version"]
-            # bpm = json_data["time"][0]['bpm']
             beatmaps.append({
                 "id": i,
                 "type": "mc",
@@ -80,13 +78,7 @@ def get_beatmaps(create=False):
     return beatmaps
 
 
-def generate_song(speed, x, sr, outdir):
-    outfile = f"{int(time.time())}-{speed}.wav"
-    librosa.output.write_wav(os.path.join(outdir, outfile), x, int(sr * speed))
-    return outfile
-
-
-def generate_beatmap_malody(json_data, x, sr, speed, outdir):
+def generate_beatmap_malody(json_data, music_src, speed, outdir):
     tmp_data = json.loads(json.dumps(json_data))
 
     if "id" in tmp_data["meta"]:
@@ -101,12 +93,12 @@ def generate_beatmap_malody(json_data, x, sr, speed, outdir):
 
     tmp_data["note"][-1]["offset"] = int(tmp_data["note"][-1]["offset"] / speed)  # 修改偏移
 
-    song_file = generate_song(speed, x, sr, outdir)
-    if NEED_COMPRESSED:
-        filepath = os.path.join(outdir, song_file)
-        compress_music(filepath)
 
-    tmp_data["note"][-1]["sound"] = song_file  # 设置歌曲文件
+    outfile = f"{int(time.time())}-{speed}.mp3"
+    outdest = os.path.join(outdir, outfile)
+    change_music_speed_with_ffmpeg(music_src, speed, outdest)
+
+    tmp_data["note"][-1]["sound"] = outfile  # 设置歌曲文件
 
     outfile = f"{int(time.time())}-{speed}.mc"
 
@@ -117,11 +109,11 @@ def generate_beatmap_malody(json_data, x, sr, speed, outdir):
 def generate_beatmaps_malody(outdir, json_data, speeds):
     json_data["meta"]["creator"] = "malody_beatmap_speed_changer"
     sond_file = json_data["note"][-1]["sound"]
-    x, sr = librosa.load(os.path.join(outdir, sond_file), sr=16000)
 
+    music_src = os.path.join(outdir, sond_file)
     for speed in speeds:
         speed = float(speed)
-        generate_beatmap_malody(json_data, x, sr, speed, outdir)
+        generate_beatmap_malody(json_data, music_src, speed, outdir)
 
     tmp_name = get_tmp_dir() + ".mcz"
     tmp_path = os.path.join("upload_dir", tmp_name)
@@ -130,22 +122,22 @@ def generate_beatmaps_malody(outdir, json_data, speeds):
 
     with zipfile.ZipFile(tmp_path, 'w') as f:
         for _dir in os.listdir(file_dir):
-            _dir = os.path.join(file_dir, _dir)
-            if os.path.isdir(_dir):
-                for i in os.walk(_dir):
-                    for n in i[2]:
-                        f.write(os.path.join(i[0], n))
+            dir2 = os.path.join(file_dir, _dir)
+            if os.path.isdir(dir2):
+                for filename in os.listdir(dir2):
+                    _path = os.path.join(file_dir, _dir, filename)
+                    w_path = os.path.join(_dir, filename)
+                    f.write(_path, w_path)
 
     return tmp_name
 
 
-def generate_beatmap_osu(json_data, x, sr, speed, outdir):
+def generate_beatmap_osu(json_data, music_src, speed, outdir):
     tmp_data = json.loads(json.dumps(json_data))
 
     tmp_data["Metadata"]['Version'] += f"-{speed}"  # 修改标题
     print(tmp_data["Metadata"]['Version'])
 
-    # tmp_data["General"]["PreviewTime"] = int(int(tmp_data["General"]["PreviewTime"]) / speed)
     tmp_data["General"]["PreviewTime"] = -1
 
     for i in range(len(json_data["Events"])):  # 修改Events
@@ -180,12 +172,11 @@ def generate_beatmap_osu(json_data, x, sr, speed, outdir):
 
         tmp_data["HitObjects"][i] = ",".join(splits)
 
-    song_file = generate_song(speed, x, sr, outdir)
-    if NEED_COMPRESSED:
-        filepath = os.path.join(outdir, song_file)
-        compress_music(filepath)
+    outfile = f"{int(time.time())}-{speed}.mp3"
+    outdest = os.path.join(outdir, outfile)
+    change_music_speed_with_ffmpeg(music_src, speed, outdest)
 
-    tmp_data["General"]["AudioFilename"] = song_file  # 设置歌曲文件
+    tmp_data["General"]["AudioFilename"] = outfile  # 设置歌曲文件
 
     outfile = f"{int(time.time())}-{speed}.osu"
 
@@ -201,10 +192,10 @@ def generate_beatmaps_osu(outdir, json_data, speeds):
     json_data["Metadata"]["BeatmapSetID"] = -1
 
     sond_file = json_data["General"]["AudioFilename"]
-    x, sr = librosa.load(os.path.join(outdir, sond_file), sr=16000)
+    music_src = os.path.join(outdir, sond_file)
     for speed in speeds:
         speed = float(speed)
-        generate_beatmap_osu(json_data, x, sr, speed, outdir)
+        generate_beatmap_osu(json_data, music_src, speed, outdir)
 
     tmp_name = get_tmp_dir() + ".osz"
     tmp_path = os.path.join("upload_dir", tmp_name)
@@ -215,7 +206,8 @@ def generate_beatmaps_osu(outdir, json_data, speeds):
         for filepath in os.listdir(file_dir):
             print(filepath)
             _path = os.path.join(file_dir, filepath)
-            f.write(_path)
+            w_path = filepath
+            f.write(_path, w_path)
 
     return tmp_name
 

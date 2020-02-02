@@ -9,7 +9,7 @@ class OsuFileParser:
     def read_osu_file(filepath):
         obj = {}
         key_pair_sections = ["General", "Editor", "Metadata", "Difficulty", "Colours"]
-        with open(filepath, "r") as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             file_format = f.readline()
             obj["format"] = file_format.strip()
             section = ""  # 当前的section
