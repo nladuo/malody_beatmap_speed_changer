@@ -43,14 +43,15 @@ def get_beatmaps(create=False):
         zFile.extract(fileM, base_dir)
         if ".mc" in fileM:
             splits = fileM.split("/")
-            if len(splits) != 2:
-                raise Exception("error format")
             filepath = os.path.join(base_dir, fileM)
             with open(filepath, "r", encoding="utf-8") as f:
                 data = f.read()
             json_data = json.loads(data)
 
-            out_dir = os.path.join(base_dir, splits[0])
+            if len(splits) == 1:
+                out_dir = base_dir
+            else:
+                out_dir = os.path.join(base_dir, *splits[:len(splits)-1])
             version = json_data["meta"]["version"]
             beatmaps.append({
                 "id": i,
@@ -62,9 +63,13 @@ def get_beatmaps(create=False):
             })
             i += 1
         elif ".osu" in fileM:
+            splits = fileM.split("/")
             filepath = os.path.join(base_dir, fileM)
             json_data = OsuFileParser.read_osu_file(filepath)
-            out_dir = base_dir
+            if len(splits) == 1:
+                out_dir = base_dir
+            else:
+                out_dir = os.path.join(base_dir, *splits[:len(splits) - 1])
             version = json_data["Metadata"]["Version"]
             beatmaps.append({
                 "id": i,
@@ -121,15 +126,21 @@ def generate_beatmaps_malody(outdir, json_data, speeds):
     file_dir = os.path.join("upload_dir", "tmp", get_tmp_dir())
 
     with zipfile.ZipFile(tmp_path, 'w') as f:
-        for _dir in os.listdir(file_dir):
-            dir2 = os.path.join(file_dir, _dir)
-            if os.path.isdir(dir2):
-                for filename in os.listdir(dir2):
-                    _path = os.path.join(file_dir, _dir, filename)
-                    w_path = os.path.join(_dir, filename)
-                    f.write(_path, w_path)
+        write_file_recursively(f, "", file_dir)
 
     return tmp_name
+
+
+def write_file_recursively(zfile, relative_dir, base_dir):
+    """ 递归搜索文件，并压缩 """
+    now_dir = os.path.join(base_dir, relative_dir)
+    for filename in os.listdir(now_dir):
+        filepath = os.path.join(now_dir, filename)
+        if os.path.isdir(filepath):
+            write_file_recursively(zfile, os.path.join(relative_dir, filename), base_dir)
+        else:
+            write_path = os.path.join(relative_dir, filename)
+            zfile.write(filepath, write_path)
 
 
 def generate_beatmap_osu(json_data, music_src, speed, outdir):
@@ -157,7 +168,8 @@ def generate_beatmap_osu(json_data, music_src, speed, outdir):
         splits = tmp_data["TimingPoints"][i].split(",")
 
         splits[0] = str(int(int(splits[0]) / speed))
-        splits[1] = str(float(splits[1]) / speed)
+        if float(splits[1]) > 0:
+            splits[1] = str(float(splits[1]) / speed)
 
         tmp_data["TimingPoints"][i] = ",".join(splits)
 
@@ -203,11 +215,7 @@ def generate_beatmaps_osu(outdir, json_data, speeds):
     file_dir = os.path.join("upload_dir", "tmp", get_tmp_dir())
 
     with zipfile.ZipFile(tmp_path, 'w') as f:
-        for filepath in os.listdir(file_dir):
-            print(filepath)
-            _path = os.path.join(file_dir, filepath)
-            w_path = filepath
-            f.write(_path, w_path)
+        write_file_recursively(f, "", file_dir)
 
     return tmp_name
 
