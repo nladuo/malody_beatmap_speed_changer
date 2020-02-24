@@ -96,7 +96,12 @@ def generate_beatmap_malody(json_data, music_src, speed, outdir):
     for i in range(len(json_data["time"])):  # 修改BPM
         tmp_data["time"][i]["bpm"] = speed * tmp_data["time"][i]["bpm"]
 
-    tmp_data["note"][-1]["offset"] = int(tmp_data["note"][-1]["offset"] / speed)  # 修改偏移
+    index = 0
+    for note in tmp_data["note"]:
+        if "offset" in note:
+            break
+        index += 1
+    tmp_data["note"][index]["offset"] = int(tmp_data["note"][index]["offset"] / speed)  # 修改偏移
 
 
     outfile = f"{int(time.time())}-{speed}.mp3"
@@ -113,7 +118,10 @@ def generate_beatmap_malody(json_data, music_src, speed, outdir):
 
 def generate_beatmaps_malody(outdir, json_data, speeds):
     json_data["meta"]["creator"] = "malody_beatmap_speed_changer"
-    sond_file = json_data["note"][-1]["sound"]
+    sond_file = ""
+    for note in json_data["note"]:
+        if "sound" in note:
+            sond_file = note["sound"]
 
     music_src = os.path.join(outdir, sond_file)
     for speed in speeds:
