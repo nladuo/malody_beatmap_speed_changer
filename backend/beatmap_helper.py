@@ -119,7 +119,7 @@ def generate_beatmap_malody(json_data, music_src, speed, outdir):
 
 
 def generate_beatmaps_malody(outdir, json_data, speeds):
-    json_data["meta"]["creator"] = "malody_beatmap_speed_changer"
+    json_data["meta"]["creator"] = "nladuo/malody_beatmap_speed_changer"
     sond_file = ""
     for note in json_data["note"]:
         if "sound" in note:
@@ -207,9 +207,9 @@ def generate_beatmap_osu(json_data, music_src, speed, outdir):
 
 
 def generate_beatmaps_osu(outdir, json_data, speeds):
-    json_data["Metadata"]["Creator"] = "malody_beatmap_speed_changer"
+    json_data["Metadata"]["Creator"] = "nladuo/malody_beatmap_speed_changer"
     json_data["Metadata"]["Source"] = "https://github.com/nladuo/malody_beatmap_speed_changer"
-    json_data["Metadata"]["Tags"] = "produced by malody_beatmap_speed_changer"
+    json_data["Metadata"]["Tags"] = "produced by nladuo/malody_beatmap_speed_changer"
     json_data["Metadata"]["BeatmapID"] = 0
     json_data["Metadata"]["BeatmapSetID"] = -1
 
