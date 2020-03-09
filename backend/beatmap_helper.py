@@ -101,8 +101,10 @@ def generate_beatmap_malody(json_data, music_src, speed, outdir):
         if "offset" in note:
             break
         index += 1
-    tmp_data["note"][index]["offset"] = int(tmp_data["note"][index]["offset"] / speed)  # 修改偏移
-
+    try:
+        tmp_data["note"][index]["offset"] = int(tmp_data["note"][index]["offset"] / speed)  # 修改偏移
+    except Exception as e:
+        pass
 
     outfile = f"{int(time.time())}-{speed}.mp3"
     outdest = os.path.join(outdir, outfile)
