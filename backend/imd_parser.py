@@ -7,7 +7,7 @@ import struct
 class ImdFileParser:
     @staticmethod
     def read_imd_file(filepath):
-        version = filepath.split("/")[-1].replace(".imd", "")
+        version = filepath.split("/")[-1].split('\\')[-1].replace(".imd", "")
         obj = {
             "version": version,
             "song_file": version.split("_")[0].split("-")[0].split(".")[0]+".mp3",
