@@ -1,7 +1,7 @@
 # Malody Beatmap Speed Changer
-Malody谱面调速器，同时支持Osu格式。
+Malody谱面调速器，同时支持Osu，节奏大师格式。
 
-Malody Beatmap Speed Changer, also support .osu files.
+Malody Beatmap Speed Changer, also support .osu and .imd files.
 
 ## Windows Download
 ### 百度云

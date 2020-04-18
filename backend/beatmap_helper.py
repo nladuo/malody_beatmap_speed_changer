@@ -4,6 +4,7 @@ import json
 import time
 import uuid
 from .osu_parser import OsuFileParser
+from .imd_parser import ImdFileParser
 from .music_helper import change_music_speed_with_ffmpeg
 
 
@@ -74,6 +75,25 @@ def get_beatmaps(create=False):
             beatmaps.append({
                 "id": i,
                 "type": "osu",
+                "out_dir": out_dir,
+                "version": version,
+                "json_data": json_data
+            })
+            i += 1
+        elif ".imd" in fileM:
+            splits = fileM.split("/")
+            filepath = os.path.join(base_dir, fileM)
+            json_data = ImdFileParser.read_imd_file(filepath)
+            if len(splits) == 1:
+                out_dir = base_dir
+            else:
+                out_dir = os.path.join(base_dir, *splits[:len(splits) - 1])
+            # version = json_data["Metadata"]["Version"]
+            # print(json_data)
+            version = json_data["version"]
+            beatmaps.append({
+                "id": i,
+                "type": "rm",
                 "out_dir": out_dir,
                 "version": version,
                 "json_data": json_data
@@ -230,8 +250,54 @@ def generate_beatmaps_osu(outdir, json_data, speeds):
     return tmp_name
 
 
+def generate_beatmap_rm(json_data, music_src, speed, outdir):
+    tmp_data = json.loads(json.dumps(json_data))
+
+    tmp_data["length"] = int(json_data["length"] / speed)
+
+    print(tmp_data["bpm_list"])
+    for i in range(len(json_data["bpm_list"])):  # 修改BPM
+        tmp_data["bpm_list"][i]["bpm"] = speed * json_data["bpm_list"][i]["bpm"]
+        tmp_data["bpm_list"][i]["t"] = int(json_data["bpm_list"][i]["t"] / speed)
+
+    for i in range(len(json_data["notes"])):  # 修改BPM
+        tmp_data["notes"][i]["time"] = int(json_data["notes"][i]["time"] / speed)
+        if (json_data["notes"][i]["action"] != 0) and (json_data["notes"][i]["param"] > 3):
+            tmp_data["notes"][i]["param"] = int(json_data["notes"][i]["param"] / speed)
+            print(tmp_data["notes"][i]["param"])
+
+    outfile = f"{json_data['song_name']}-{speed}.mp3"
+    outdest = os.path.join(outdir, outfile)
+    change_music_speed_with_ffmpeg(music_src, speed, outdest)
+
+    outfile = f"{json_data['version']}-{speed}.imd"
+    outdest = os.path.join(outdir, outfile)
+    ImdFileParser.write_imd_file(tmp_data, outdest)
+
+
+def generate_beatmaps_rm(outdir, json_data, speeds):
+    sond_file = json_data["song_file"]
+
+    music_src = os.path.join(outdir, sond_file)
+    for speed in speeds:
+        speed = float(speed)
+        generate_beatmap_rm(json_data, music_src, speed, outdir)
+
+    tmp_name = get_tmp_dir() + ".zip"
+    tmp_path = os.path.join("upload_dir", tmp_name)
+
+    file_dir = os.path.join("upload_dir", "tmp", get_tmp_dir())
+
+    with zipfile.ZipFile(tmp_path, 'w') as f:
+        write_file_recursively(f, "", file_dir)
+
+    return tmp_name
+
+
 def generate_beatmaps(_type, outdir, json_data, speeds):
     if _type == "mc":
         return generate_beatmaps_malody(outdir, json_data, speeds)
+    elif _type == "rm":
+        return generate_beatmaps_rm(outdir, json_data, speeds)
     else:
         return generate_beatmaps_osu(outdir, json_data, speeds)
