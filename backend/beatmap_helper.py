@@ -126,7 +126,7 @@ def generate_beatmap_malody(json_data, music_src, speed, outdir):
     except Exception as e:
         pass
 
-    outfile = f"{int(time.time())}-{speed}.mp3"
+    outfile = f"{int(time.time())}-{speed}.wmv"
     outdest = os.path.join(outdir, outfile)
     change_music_speed_with_ffmpeg(music_src, speed, outdest)
 
@@ -214,7 +214,7 @@ def generate_beatmap_osu(json_data, music_src, speed, outdir):
 
         tmp_data["HitObjects"][i] = ",".join(splits)
 
-    outfile = f"{int(time.time())}-{speed}.mp3"
+    outfile = f"{int(time.time())}-{speed}.wmv"
     outdest = os.path.join(outdir, outfile)
     change_music_speed_with_ffmpeg(music_src, speed, outdest)
 
